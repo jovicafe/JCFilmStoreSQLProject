@@ -11,7 +11,7 @@ analyze;
 --2. Muestra los nombres de todas las películas con una clasificación por edades de ‘R’.
 select f.title as "FilmTitle"
 from film f
-where f.rating ='R'
+where f.rating ='R';
 	
 --3. Encuentra los nombres de los actores que tengan un “actor_id” entre 30 y 40.
 
@@ -52,7 +52,7 @@ order by f.length asc;
 
 		select f.title, f.length 
 		from film f 
-		where f.rating = 'PG-13' and f.length >180
+		where f.rating = 'PG-13' and f.length >180;
 		
 --9. Encuentra la variabilidad de lo que costaría reemplazar las películas.
 
@@ -61,7 +61,7 @@ order by f.length asc;
 		select round(variance(f.replacement_cost),3) as "Varianza",
 			round(stddev(f."replacement_cost"),3) as "DesvStandard",
 			round(avg(f.replacement_cost),3) as "Promedio"
-		from film f 
+		from film f;
 		
 --10.Encuentra la mayor y menor duración de una película de nuestra BBDD.
 		
@@ -180,7 +180,7 @@ order by f.length asc;
 --21. ¿Cuál es la media de duración del alquiler de las películas?
 	
 		select justify_interval(AVG(return_date - rental_date)) as "RentalAVG"
-		from rental r 
+		from rental r ;
 		-- cuidado resultado postgres indica 24h 26 minutos que es 1 dias más 
 			
 --22. Crea una columna con el nombre y apellidos de todos los actores y actrices.
@@ -219,7 +219,7 @@ order by f.length asc;
 		select f.film_id, f.title, f.length
 		from film f
 		where f.length > (select * from length_average)
-		order by f.length
+		order by f.length;
 
 --25. Averigua el número de alquileres registrados por mes.
 		
@@ -288,7 +288,7 @@ order by f.length asc;
 		from film_actor f
 		inner join actor a
 		on f.actor_id=a.actor_id
-		group by f.actor_id,a.first_name, a.last_name
+		group by f.actor_id,a.first_name, a.last_name;
 		
 --31. Obtener todas las películas y mostrar los actores que han actuado en ellas, incluso si algunas
 -- películas no tienen actores asociados.
@@ -303,9 +303,9 @@ order by f.length asc;
 		from film f
 		left join actordetails_film adf
 		on f.film_id=adf.film_id
-		order by f.film_id 
+		order by f.film_id ;
 		
-		--revisamos las pelíclas sin actores vinculados de la lista 
+		--revisamos las películas sin actores vinculados de la lista 
 		/*with films_actorslinked as (--listado de peliculas incluidas en listado de actores
 		select f.film_id 
 		from film_actor f
@@ -380,7 +380,7 @@ order by f.length asc;
 Apellido.
 
 	select a.first_name as "Nombre", a.last_name as "Apellido"
-	from actor a 
+	from actor a ;
 
 --37. Encuentra el ID del actor más bajo y más alto en la tabla actor.
 	
@@ -410,7 +410,7 @@ Apellido.
  	select a.first_name , count(distinct a.actor_id) as total_actors
  	from actor a
  	group by a.first_name
- 	order by count(distinct a.actor_id) desc
+ 	order by count(distinct a.actor_id) desc;
  	
 --42. Encuentra todos los alquileres y los nombres de los clientes que los realizaron.
  	
@@ -453,7 +453,7 @@ Apellido.
 	 		where f.film_id  in(
 	 			select cf.film_id--, cf.category_id
 	 			from category_film cf
-	 			where cf.name ilike 'action')
+	 			where cf.name ilike 'action');
 
 --46. Encuentra todos los actores que no han participado en películas.
 
@@ -478,7 +478,7 @@ Apellido.
 		from actor a
 		left join film_actor f
 		on a.actor_id=f.actor_id
-		group by a.actor_id
+		group by a.actor_id;
 	
 	
 --48. Crea una vista llamada “actor_num_peliculas” que muestre los nombres de los actores y el número de películas
@@ -489,14 +489,14 @@ Apellido.
 			from actor a
 			left join film_actor f
 			on a.actor_id=f.actor_id
-			group by a.actor_id
+			group by a.actor_id;
 		
 
 --49. Calcula el número total de alquileres realizados por cada cliente.
 			
 		select r.customer_id, count(distinct r.rental_id)
 		from rental r
-		group by r.customer_id
+		group by r.customer_id;
 		
 --50. Calcula la duración total de las películas en la categoría 'Action'.
 		with category_filmsname as(
@@ -567,7 +567,7 @@ Apellido.
 		left join film_actor fa
 		on fa.film_id=sf.film_id
 		where fa.actor_id=a.actor_id)
-	order by a.last_name asc
+	order by a.last_name asc;
 		
 
 --55. Encuentra el nombre y apellido de los actores que han actuado en películas que se alquilaron
@@ -597,7 +597,7 @@ Apellido.
 			where f.film_id in (
 				select ff.film_id from films_filtered ff)
 				)
-		order by a.last_name asc
+		order by a.last_name asc;
 
 		
 --56. Encuentra el nombre y apellido de los actores que no han actuado en ninguna película de la 
@@ -706,7 +706,7 @@ Apellido.
 --63. Obtén todas las combinaciones posibles de trabajadores con las tiendas que tenemos.
 			select *
 			from staff s
-			cross join store j
+			cross join store j;
 			
 			
 
@@ -717,7 +717,7 @@ Apellido.
 			from rental r
 			left join customer c
 			on r.customer_id=c.customer_id
-			group by r.customer_id, c.first_name, c.last_name
+			group by r.customer_id, c.first_name, c.last_name;
 			
 			
 
