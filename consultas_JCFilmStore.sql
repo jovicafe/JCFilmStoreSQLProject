@@ -157,9 +157,6 @@ order by f.length asc;
 			    where fc.film_id = f.film_id);
 	
 	
-	
-		
-
 		 
 --20. Encuentra las categorías de películas que tienen un promedio de duración superior a 110 minutos 
 --y muestra el nombre de la categoría junto con el promedio de duración.
