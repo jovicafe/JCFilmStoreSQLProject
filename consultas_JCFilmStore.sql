@@ -23,7 +23,7 @@ where a.actor_id <40 and a.actor_id >30;
 	-- NOTA : VALOR NULL en toda la columna. 
 select *
 from film f
-where f.language_id= f.original_language;
+where f.language_id= f.original_language_id;
 
 --5. Ordena las películas por duración de forma ascendente.
 
@@ -52,7 +52,7 @@ order by f.length asc;
 
 		select f.title, f.length 
 		from film f 
-		where f.rating = 'PG-13' and f.length >180;
+		where f.rating = 'PG-13' or f.length >180;
 		
 --9. Encuentra la variabilidad de lo que costaría reemplazar las películas.
 
@@ -109,14 +109,15 @@ order by f.length asc;
 		limit 10;
 
 -- 17. Encuentra el nombre y apellido de los actores que aparecen en la película con título ‘Egg Igby’.
-		select a.actor_id, f.film_id, a.first_name , a.last_name 
-		from film_actor f
+		select a.actor_id, fa.film_id, a.first_name , a.last_name 
+		from film_actor fa
 		inner join actor a
-		on f.actor_id =a.actor_id
-		where f.film_id = (
-			select f2.film_id --f2.title 
-			from film f2
-			where f2.title ilike 'Egg Igby');
+		on fa.actor_id =a.actor_id
+		where fa.film_id = (
+			select f.film_id --f.title 
+			from film f
+			where f.title ilike 'Egg Igby');
+		--alias modificado para mejor comprensión
 			
 --18. Selecciona todos los nombres de las películas únicos.
 		select distinct  f.title
@@ -161,6 +162,13 @@ order by f.length asc;
 --20. Encuentra las categorías de películas que tienen un promedio de duración superior a 110 minutos 
 --y muestra el nombre de la categoría junto con el promedio de duración.
 
+		--revisado, teniendo  en cuenta : 
+		--film_category (alias f2) tiene la columna category_id.
+		--la union se hace entre  union film.film_id = film_category.film_id
+		-- en la segunda parte :
+		--Se une correctamente plc.category_id = c.category_id
+		--category es la tabla que contiene el nombre de la categoría (c.name)
+		
 	with promedio_lenght_categoria as (
 			select f2.category_id, AVG(f.length) as promedio_lenght
 			from film f
@@ -254,12 +262,21 @@ order by f.length asc;
 			from payment p)
 		--order by p.amount desc
 			)
+		
 		select distinct ifl.film_id, ifl.title
+		from inventory_film ifl
+		inner join highvalue_rental_inventory_ids hri
+		on ifl.inventory_id=hri.inventory_id;
+		
+		
+		'''
+		menos eficiente, pero equivalente:
+		 select distinct ifl.film_id, ifl.title
 		from inventory_film ifl
 		where ifl.inventory_id in (
 			select hri.inventory_id
 			from highvalue_rental_inventory_ids hri)
-			;
+			;'''
 		
 			
 --28. Muestra el id de los actores que hayan participado en más de 40 películas.
@@ -272,11 +289,11 @@ order by f.length asc;
 
 --29. Obtener todas las películas y, si están disponibles en el inventario, mostrar la cantidad disponible.
 		
-		select  i.film_id, count(distinct i.inventory_id) as total_inventario
+		select  f.film_id, count(distinct i.inventory_id) as total_inventario
 		from inventory i
-		right join film f
+		right join film f -- modificado de right a left para tener 'todas' las peliculas, estén o no en inventario
 		on i.film_id= f.film_id
-		group by i.film_id
+		group by f.film_id -- reorganizado el group by por tabla film para incluir todo. 
 		order by total_inventario asc;
 		
 		
@@ -445,7 +462,7 @@ Apellido.
  			on f.category_id=c.category_id 
  			)
  			
-	 		select f.actor_id,f,f.film_id 
+	 		select f.actor_id,f.film_id -- typo error corregido
 	 		from film_actor f
 	 		where f.film_id  in(
 	 			select cf.film_id--, cf.category_id
@@ -496,11 +513,17 @@ Apellido.
 		group by r.customer_id;
 		
 --50. Calcula la duración total de las películas en la categoría 'Action'.
+		
+		--nota: la tabla film_category tiene 3 columnas
+		-- film_id, 
+		--category_id,
+		-- last_update
+		
 		with category_filmsname as(
-			select f.category_id, f.film_id,c.name 
-			from film_category f
+			select fc.category_id, fc.film_id,c.name 
+			from film_category fc
 			left join category c
-			on f.category_id=c.category_id)
+			on fc.category_id=c.category_id)
 			
 			select cf.name, sum(f.length)
 			from film f
